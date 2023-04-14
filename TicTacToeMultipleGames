@@ -1,0 +1,67 @@
+import random #2 bots play tictactoe 
+
+def draw_board(board):
+    print("   |   |")
+    print(" {} | {} | {}".format(board[0], board[1], board[2]))
+    print("___|___|___")
+    print("   |   |")
+    print(" {} | {} | {}".format(board[3], board[4], board[5]))
+    print("___|___|___")
+    print("   |   |")
+    print(" {} | {} | {}".format(board[6], board[7], board[8]))
+    print("   |   |")
+
+def get_free_positions(board):
+    return [i for i in range(len(board)) if board[i] == " "]
+
+def is_winner(board, symbol):
+    winning_positions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # columns
+        [0, 4, 8], [2, 4, 6]             # diagonals
+    ]
+    for positions in winning_positions:
+        if all([board[i] == symbol for i in positions]):
+            return True
+    return False
+
+def play_game(bot1, bot2):
+    board = [" "]*9
+    symbol1, symbol2 = "X", "O"
+    players = [(bot1, symbol1), (bot2, symbol2)]
+    random.shuffle(players)  # randomly select who plays first
+    for player, symbol in players:
+        while True:
+            free_positions = get_free_positions(board)
+            if len(free_positions) == 0:
+                print("Tie game!")
+                return None
+            position = player(board, symbol)
+            if position in free_positions:
+                board[position] = symbol
+                if is_winner(board, symbol):
+                    print(f"{symbol} wins!")
+                    return symbol
+                break
+    return None
+
+def random_bot(board, symbol):
+    free_positions = get_free_positions(board)
+    return random.choice(free_positions)
+
+def run_many_games(bot1, bot2, num_games):
+    scores = {bot1.__name__: 0, bot2.__name__: 0, "Ties": 0}
+    for i in range(num_games):
+        print(f"Game {i+1}:")
+        winner = play_game(bot1, bot2)
+        if winner is not None:
+            scores[winner.__name__] += 1
+        else:
+            scores["Ties"] += 1
+        print("")
+    print("Final scores:")
+    for bot, score in scores.items():
+        print(f"{bot}: {score} wins")
+        
+if __name__ == "__main__":
+    run_many_games(random_bot, random_bot, 100)
