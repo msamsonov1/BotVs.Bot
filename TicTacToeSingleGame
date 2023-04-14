@@ -1,0 +1,60 @@
+import random #single tic tac toe game bot vs. bot
+
+def draw_board(board):
+    print(board[0] + '|' + board[1] + '|' + board[2])
+    print('-+-+-')
+    print(board[3] + '|' + board[4] + '|' + board[5])
+    print('-+-+-')
+    print(board[6] + '|' + board[7] + '|' + board[8])
+
+def is_winner(board, player):
+    return (
+        (board[0] == player and board[1] == player and board[2] == player) or
+        (board[3] == player and board[4] == player and board[5] == player) or
+        (board[6] == player and board[7] == player and board[8] == player) or
+        (board[0] == player and board[3] == player and board[6] == player) or
+        (board[1] == player and board[4] == player and board[7] == player) or
+        (board[2] == player and board[5] == player and board[8] == player) or
+        (board[0] == player and board[4] == player and board[8] == player) or
+        (board[2] == player and board[4] == player and board[6] == player)
+    )
+
+def is_board_full(board):
+    return not any(cell == ' ' for cell in board)
+
+def get_bot_move(board, bot_player):
+    available_moves = [i for i in range(9) if board[i] == ' ']
+    for move in available_moves:
+        board_copy = board[:]
+        board_copy[move] = bot_player
+        if is_winner(board_copy, bot_player):
+            return move
+    for move in available_moves:
+        board_copy = board[:]
+        board_copy[move] = 'X' if bot_player == 'O' else 'O'
+        if is_winner(board_copy, 'X' if bot_player == 'O' else 'O'):
+            return move
+    if 4 in available_moves:
+        return 4
+    return random.choice(available_moves)
+
+def play():
+    board = [' '] * 9
+    bot1_player = 'X'
+    bot2_player = 'O'
+    current_player = bot1_player
+    draw_board(board)
+    while not is_board_full(board):
+        if current_player == bot1_player:
+            move = get_bot_move(board, bot1_player)
+        else:
+            move = get_bot_move(board, bot2_player)
+        board[move] = current_player
+        draw_board(board)
+        if is_winner(board, current_player):
+            print(current_player + ' wins!')
+            return
+        current_player = bot1_player if current_player == bot2_player else bot2_player
+    print('Tie!')
+
+play()
