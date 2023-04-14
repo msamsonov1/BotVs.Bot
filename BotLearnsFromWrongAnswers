@@ -1,0 +1,53 @@
+import random
+
+class QuestionBot:
+    def ask_question(self):
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        operator = random.choice(['+', '-', '*'])
+        question = f"What is {num1} {operator} {num2}?"
+        return question, num1, num2, operator
+
+class AnswerBot:
+    def __init__(self):
+        self.incorrect_count = 0
+        self.correct_count = 0
+
+    def get_answer(self, num1, num2, operator):
+        if operator == '+':
+            answer = num1 + num2 + random.randint(-2, 2)
+        elif operator == '-':
+            answer = num1 - num2 + random.randint(-2, 2)
+        else:
+            answer = num1 * num2 + random.randint(-2, 2)
+
+        if answer == eval(f"{num1}{operator}{num2}"):
+            self.correct_count += 1
+        else:
+            self.incorrect_count += 1
+            if random.random() < self.incorrect_count / (self.incorrect_count + self.correct_count):
+                answer = eval(f"{num1}{operator}{num2}")
+        return answer
+
+question_bot = QuestionBot()
+answer_bot = AnswerBot()
+
+questions_asked = 0
+correct_answers = 0
+
+for i in range(300):#add more here to see learning effect and if it is set to save learned knowledge.......
+    question, num1, num2, operator = question_bot.ask_question()
+    print("Question:", question)
+    answer = answer_bot.get_answer(num1, num2, operator)
+    if answer == eval(f"{num1}{operator}{num2}"):
+        correct_answers += 1
+        print("Correct!")
+    else:
+        print(f"Wrong! The correct answer is {eval(f'{num1}{operator}{num2}')}.")
+    questions_asked += 1
+
+percentage_correct = correct_answers / questions_asked * 100
+percentage_learned = (1 - answer_bot.incorrect_count / (answer_bot.incorrect_count + answer_bot.correct_count)) * 100
+
+print(f"Percentage correct: {percentage_correct:.2f}%")
+print(f"Percentage learned: {percentage_learned:.2f}%")
